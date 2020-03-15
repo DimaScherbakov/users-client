@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://us-central1-users-dd33f.cloudfunctions.net/webApi'
+  baseUrl: 'https://us-central1-users-dd33f.cloudfunctions.net/webApi',
+  pageSize: 50 // the same variable should on server side
 };
 
 /*

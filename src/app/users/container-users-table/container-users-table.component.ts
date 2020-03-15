@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {UsersService} from '../../core/users.service';
+import {take} from 'rxjs/operators';
+import {HttpResponse} from '../../models/http-response';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-container-users-table',
@@ -6,10 +10,18 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./container-users-table.component.css']
 })
 export class ContainerUsersTableComponent implements OnInit {
+  length = 0;
+  pageSize = environment.pageSize;
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor(private usersService: UsersService) {
   }
 
+  ngOnInit(): void {
+    this.usersService.pagesCount()
+      .pipe(take(1))
+      .subscribe((pages: HttpResponse) => {
+        this.length = pages.data;
+      });
+
+  }
 }
