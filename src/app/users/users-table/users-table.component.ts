@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {User} from '../../models/user';
+import {UserTable} from '../../models/user';
 
 @Component({
   selector: 'app-users-table',
@@ -9,9 +9,20 @@ import {User} from '../../models/user';
 export class UsersTableComponent implements OnInit {
   @Input() length = 0;
   @Input() pageSize = 0;
-  @Input() users: Array<User> = [];
+  private _USERS: Array<UserTable> = [];
 
   constructor() {
+  }
+
+  get users() {
+    return this._USERS;
+  }
+
+  @Input() set users(rawUsers: Array<UserTable>) {
+    if (!rawUsers.some(u => u)) {
+      this._USERS = [];
+    }
+    this._USERS = rawUsers;
   }
 
   ngOnInit(): void {

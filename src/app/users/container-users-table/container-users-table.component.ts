@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from '../../core/users.service';
-import {take} from 'rxjs/operators';
-import {HttpResponse} from '../../models/http-response';
+import {map, take} from 'rxjs/operators';
 import {environment} from '../../../environments/environment';
-import {User} from '../../models/user';
+import {UserRaw, UserTable} from '../../models/user';
+import {UserTransformService} from '../services/user-transform.service';
 
 @Component({
   selector: 'app-container-users-table',
@@ -13,21 +13,26 @@ import {User} from '../../models/user';
 export class ContainerUsersTableComponent implements OnInit {
   length = 0;
   pageSize = environment.pageSize;
-  users: Array<User> = [];
+  users: Array<UserTable> = [];
 
-  constructor(private usersService: UsersService) {
+  constructor(
+    private userTransformS: UserTransformService,
+    private usersS: UsersService) {
   }
 
   ngOnInit(): void {
-    this.usersService.pagesCount()
+    this.usersS.pagesCount()
       .pipe(take(1))
-      .subscribe((pages: HttpResponse) => {
-        this.length = pages.data;
+      .subscribe((pages: number) => {
+        this.length = pages;
       });
-    this.usersService.usersPerPage(1)
+    this.usersS.usersPerPage(1)
       .pipe(take(1))
-      .subscribe((pages: HttpResponse) => {
-        this.users = pages.data;
+      .pipe(map((rawUsers: Array<UserRaw>) => {
+        return rawUsers.map((userRaw: UserRaw): UserTable => this.userTransformS.transformUserRawToUserTable(userRaw));
+      }))
+      .subscribe((users: Array<UserTable>) => {
+        this.users = users;
       });
   }
 }
